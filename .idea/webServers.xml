@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="ac2b03e4-26c4-4585-b647-74e99186e107" name="sirius">
+        <fileTransfer rootFolder="/gsfs0/data/kokkodis" accessType="SFTP" host="sirius.bc.edu" port="22022" sshConfigId="fe19e9fa-98f8-4fe9-ab44-2e3444eb66c9" sshConfig="kokkodis@sirius.bc.edu:22022 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
