@@ -9,7 +9,7 @@ printDescrStats <-function(d,ivs,addLineSpace){
     sdVal <-  sd(tmp, na.rm=T)
     minVal <- min(tmp,na.rm=T)
     maxVal <- max(tmp,na.rm=T)
-    cat("&", paste("\\",ifelse(!(col  %in% e),tolower(col),col), sep=""),
+    cat("&", paste("\\",stringr::str_replace_all(ifelse(!(col  %in% e),tolower(col),col),"_",""), sep=""),
         " & ", getVal(meanVal),
         " & ", getVal(medVal),
         " & ", getVal(sdVal),

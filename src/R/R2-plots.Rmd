@@ -46,10 +46,10 @@ library(ggthemes)
 
 
 ```{r,  warning=F, comment=F, message=F}
-to_knit = T
-#levander blueSky greyGreen green purple grey red blueGrey 
-#yellow sparklingGreen orrange beige purple_smooth
-l = getColors("blueGrey")
+to_knit = F
+#levander blueSky greyGreen green purple grey red blueGrey yellow sparklingGreen orrange beige purple_smooth
+l = getColors("greenbeige")
+l
 baseColor = l$baseColor
 bgColor = l$darkColor
 if (to_knit==T){
@@ -58,7 +58,7 @@ shape_size=2
 annot_size =2
 line_size=0.5
 }else{
-baseSize = 20
+baseSize = 21
 shape_size=5
 annot_size=4
 line_size=2
@@ -69,6 +69,7 @@ baseShape = 7
 highlightShape = 15
 fontTheme = 'sans'
 serror = function(x) sqrt(var(x,na.rm = T) / length(x))
+bgColor = l$highlightColor
 ```
 
 
@@ -139,7 +140,7 @@ get_ranking_performance_plot = function() {
 get_focal_imprvs = function(algorithm){
   new_d = get_imprvement(d,algorithm) %>% bind_cols(d %>% select(prc,fold))
   new_d %>% rename(improvement = algorithm) %>% mutate(model = algorithm) %>% 
-  group_by(model,prc) %>% summarise(avg=mean(improvement,na.rm = T), 
+  group_by(model,prc) %>% summarise(avg=mean(improvement), 
                                       se = serror(improvement))-> new_d 
     return(new_d)
   }
@@ -152,18 +153,20 @@ baselines %>% map_dfr(get_focal_imprvs) -> r
 r %>%  update_model_names %>%  ggplot( aes(x = prc, y = avg, 
                           ymin = (avg - 1.645 * se), ymax = (avg + 1.645 * se),
                       color = baseColor, fill = '1')) +
-    geom_col(alpha=0.7,size=line_size)+
+    geom_col(alpha=0.4,size=line_size)+
     facet_wrap(~model, ncol = 6, scales = "free_y") +
     geom_errorbar(width = 0.3) +
     scale_color_manual(values = c(baseColor), name = "Improvement over") +
-    scale_fill_manual(values = c(baseColor), name = "Improvement over") +
+    scale_fill_manual(values = c(bgColor), name = "Improvement over") +
     xlab("Ranked cohort (p)") +
     scale_x_continuous(breaks = c(0.5,1),labels =c('Bottom 50%', 'Top 50%')) +
     geom_hline(yintercept = 0, linetype = "dashed") +
-    geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.2) +
+    geom_vline(xintercept = 0.5, linetype = "dashed", alpha = 0.4) +
     ylab(" Performance lift (%)") +
-    theme_minimal(base_size = baseSize) +
-    theme(legend.position = "none")->p
+    theme_hc(base_size=baseSize)+
+    theme(strip.background =element_rect(fill=alpha(bgColor,0.4)))+
+    theme(legend.position = "none")+
+  theme(axis.title = element_text())->p
   return(p)
 }
 ```
@@ -175,7 +178,7 @@ get_auc_n_plot = function() {
   get_focal_imprvs = function(algorithm){
     new_d = get_imprvement(d,algorithm) %>% bind_cols(d %>% select(n,fold))
     new_d %>% rename(improvement = algorithm) %>% mutate(model = algorithm) %>%
-    group_by(model,n) %>% summarise(avg=mean(improvement,na.rm = T), 
+    group_by(model,n) %>% summarise(avg=mean(improvement), 
                                     se = serror(improvement))-> new_d 
     return(new_d)
   }
@@ -188,9 +191,9 @@ get_labels(r,level=0.9) %>% update_model_names ->t
 r %>% update_model_names %>%  ggplot(aes(x = n, y = avg, 
                           ymin = (avg -1.645 * se), ymax = (avg + 1.645 * se),
                                          color = baseColor, shape = '1')) +
-  geom_smooth(aes(fill = baseColor), method = 'lm', alpha = 0.2,size=line_size)+
+  geom_smooth(aes(fill = bgColor), method = 'lm', alpha = 0.4,size=line_size)+
   scale_color_manual(values = c(baseColor), name = "Improvement over") +
-  scale_fill_manual(values = c(baseColor), name = "Improvement over") +
+  scale_fill_manual(values = c(bgColor), name = "Improvement over") +
   scale_shape_manual(values = c(baseShape), name = "Improvement over") +
   xlab("") +
   geom_text(t, mapping = aes(x = 10, y =yposition, 
@@ -203,8 +206,10 @@ r %>% update_model_names %>%  ggplot(aes(x = n, y = avg,
   facet_wrap(~model, ncol = 5,  scales = "free_y")+
   geom_hline(yintercept = 0, linetype = "dashed") +
   ylab("AUC Improvement (%)") +
-  theme_minimal(base_size = baseSize) +
-  theme(legend.position = "none")->p
+  theme_hc(base_size=baseSize)+
+    theme(strip.background =element_rect(fill=alpha(bgColor,0.4)))+
+  theme(legend.position = "none")+
+  theme(axis.title = element_text())->p
   return(p)
 }
 ```
@@ -221,7 +226,7 @@ get_within_opening_perf_plot <- function() {
 get_focal_imprvs = function(algorithm){
     new_d = get_imprvement(d,algorithm) %>% bind_cols(d %>% select(fold))
     new_d %>% rename(improvement = algorithm) %>% mutate(model = algorithm) %>%
-    group_by(model) %>% summarise(avg=mean(improvement,na.rm = T), 
+    group_by(model) %>% summarise(avg=mean(improvement), 
                                   se = serror(improvement))-> new_d 
     return(new_d)
   }
@@ -234,13 +239,16 @@ r %>% update_model_names %>% ggplot(aes(x = model, y = avg,
                                           color = '1', shape = '1')) +
   geom_point(size = shape_size) +
   geom_errorbar(width = 0.2) +
-  ylab("Performance improvement (%)") +
+  ylab("Improvement (%)") +
   xlab(expression(paste(""))) +
-  theme_minimal(base_size = baseSize) +
+  theme_hc(base_size=baseSize)+
+    theme(strip.background =element_rect(fill=alpha(bgColor,0.4)))+
   scale_color_manual(values = c(baseColor, baseColor, baseColor)) +
   scale_shape_manual(name = "", values = c(baseShape, baseShape, baseShape)) +
   theme(legend.position = "none") +
-  geom_abline(slope = 0, intercept = 0, linetype = 'dashed')
+  geom_abline(slope = 0, intercept = 0, linetype = 'dashed')+
+  theme(axis.title = element_text())+
+  facet_wrap(~"Within-task improvement of the HMM framework over alternative recommenders",strip.position = "top")
 }
 ```
 
@@ -254,7 +262,7 @@ d = read_csv(paste("../../data/evaluation_results/",inputfile,sep="")) %>%
 get_focal_imprvs = function(algorithm){
     new_d = get_imprvement(d,algorithm) %>% bind_cols(d %>% select(fold))
     new_d %>% rename(improvement = algorithm) %>% mutate(model = algorithm) %>% 
-    group_by(model) %>% summarise(avg=mean(improvement,na.rm = T), 
+    group_by(model) %>% summarise(avg=mean(improvement), 
                                   se = serror(improvement))-> new_d 
     return(new_d)
 }
@@ -269,14 +277,17 @@ r %>% update_model_names %>% ggplot(aes(x = model, y = avg,
                       color = 'r', shape = 'r')) +
   geom_point(size = shape_size) +
   geom_errorbar(width = 0.2) +
-  ylab("AUC improvement (%)") +
+  ylab("Improvement (%)") +
   xlab(expression(paste(""))) +
   geom_vline(xintercept = c(10.5), linetype = "dashed") +
-  theme_minimal(base_size = baseSize) +
+  theme_hc(base_size=baseSize)+
+    theme(strip.background =element_rect(fill=alpha(bgColor,0.4)))+
   scale_color_manual(values = c(baseColor, baseColor, baseColor)) +
   scale_shape_manual(name = "", values = c(baseShape, baseShape, baseShape)) +
   theme(legend.position = "none") +
-  geom_abline(slope = 0, intercept = 0, linetype = 'dashed')->p
+  geom_abline(slope = 0, intercept = 0, linetype = 'dashed')+
+  theme(axis.title = element_text())+
+  facet_wrap(~"AUC improvement of the HMM framework over alternative recommenders",strip.position = "top")->p
 return(p)
 }
 ```
@@ -330,7 +341,7 @@ p
 ```{r,  warning=F, comment=F, message=F}
 p = get_within_opening_perf_plot()
 ggsave(file = 
-paste("../../../../../../Apps/Overleaf/gbu/ms/r2/figures/rest_withinOpenings.pdf.pdf",
+paste("../../../../../../Apps/Overleaf/gbu/ms/r2/figures/rest_withinOpenings.pdf",
           sep = ""), 
     width = 14, height = 5, dpi = 300)
 p

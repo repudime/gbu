@@ -1,7 +1,8 @@
 #' @export
 getColors <- function(colorTheme = 'levander') {
   availCOlors = c('levander', 'blueSky', 'greyGreen', 'green',
-                  'purple', 'grey', 'red', 'blueGrey', 'yellow', 'sparklingGreen', 'orrange','beige','purple_smooth')
+                  'purple', 'grey', 'red', 'blueGrey', 'yellow', 'sparklingGreen',
+                  'orrange','beige','purple_smooth','greenbeige', 'greenbeige2','unicorn')
   darkColor <- NULL
   ultraLight <- NULL
   extraColor <- NULL
@@ -86,6 +87,27 @@ getColors <- function(colorTheme = 'levander') {
     highlightColor <- '#c9ada7'
     lightColor <- '#f2e9e4'
   }
+  else if (colorTheme == 'greenbeige') { # palate 3
+    darkColor <- '#555b6e'
+    baseColor <- '#4a4e69'
+    highlightColor <- '#ffd6ba'
+    lightColor <- '#bee3db'
+  }
+
+  else if (colorTheme == 'greenbeige2') { # palate 3
+    darkColor <- '#05668d'
+    baseColor <- '#028090'
+    highlightColor <- '#f0f3bd'
+    lightColor <- '#00a896'
+    ultraLight = '#02c39a'
+  }
+  else if (colorTheme == 'unicorn') { # palate 3
+    darkColor <- '#64a6bd'
+    baseColor <- '#90a8c3'
+    highlightColor <- '#d7b9d5'
+    lightColor <- '#ada7c9'
+    ultraLight = '#f4cae0'
+  }
   else {
     return(cat("List of avail color themes:", availCOlors))
   }
@@ -94,7 +116,7 @@ getColors <- function(colorTheme = 'levander') {
                   "lightColor" = lightColor,
                   "ultraLight" = ultraLight, 'extraColor' = extraColor)
 
-
+  pie(rep(1, length(resList)), col = unlist(resList))
   return(resList)
 
 }

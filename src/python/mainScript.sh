@@ -50,6 +50,7 @@ for fold in $(seq 0 9); do
     for batch_size in 32 64 128; do
       COUNTER=$(($COUNTER + 2))
       qsub -F "$fold  $epochs $batch_size" pbs/lstm_C
+      qsub -F "$fold  $epochs $batch_size" pbs/lstm
     done
   done
 done
