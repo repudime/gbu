@@ -1,5 +1,5 @@
 ---
-title: "GBU Plots-recommendations"
+title: "Plots of the restaurants analysis"
 output:
   pdf_document:
     toc: yes
@@ -46,7 +46,7 @@ library(ggthemes)
 
 
 ```{r,  warning=F, comment=F, message=F}
-to_knit = F
+to_knit = T
 #levander blueSky greyGreen green purple grey red blueGrey yellow sparklingGreen orrange beige purple_smooth
 l = getColors("greenbeige")
 l
